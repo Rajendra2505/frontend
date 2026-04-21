@@ -36,11 +36,7 @@ export default function ProductCard({ product }) {
       <div className="product-image-container">
         {product.discount && <span className="discount-badge">{product.discount} off</span>}
         <img
-  src={
-    product.image.startsWith("http")
-      ? product.image
-      : `https://backend-zehy.onrender.com${product.image}`
-  }
+  src={`https://backend-zehy.onrender.com${product.image}`}
   alt={product.name}
   loading="lazy"
   onError={(e) => {
