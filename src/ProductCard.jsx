@@ -35,11 +35,20 @@ export default function ProductCard({ product }) {
     <div className="product-card" onClick={handleProductClick}>
       <div className="product-image-container">
         {product.discount && <span className="discount-badge">{product.discount} off</span>}
-        <img src={product.image} alt={product.title} loading="lazy" onError={(e) => e.target.src='/vite.svg'} />
+        <img
+  src={
+    product.image.startsWith("http")
+      ? product.image
+      : `https://backend-zehy.onrender.com${product.image}`
+  }
+  alt={product.title}
+  loading="lazy"
+  onError={(e) => e.target.src = '/vite.svg'}
+/>
       </div>
       
       <div className="product-info">
-        <h3 className="product-title">{product.title}</h3>
+        <h3 className="product-title">{product.name}</h3>
         
         <div className="product-rating">
           {renderStars()}
