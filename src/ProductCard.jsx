@@ -27,7 +27,7 @@ export default function ProductCard({ product }) {
     if (!e) return;
     e.stopPropagation();
     dispatch({ type: 'ADD_TO_CART', payload: product });
-    alert(`"${product.title}" added to cart!`);
+    alert(`"${product.name}" added to cart!`);
     navigate(`/product/${product.id}`);
   };
 
@@ -41,9 +41,12 @@ export default function ProductCard({ product }) {
       ? product.image
       : `https://backend-zehy.onrender.com${product.image}`
   }
-  alt={product.title}
+  alt={product.name}
   loading="lazy"
-  onError={(e) => e.target.src = '/vite.svg'}
+  onError={(e) => {
+    console.log("Image failed:", e.target.src);
+    e.target.src = "https://via.placeholder.com/200";
+  }}
 />
       </div>
       
