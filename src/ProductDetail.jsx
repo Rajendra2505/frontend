@@ -42,7 +42,7 @@ export default function ProductDetail() {
       <button className="back-btn" onClick={() => navigate('/')}>← Back to Home</button>
       <div className="detail-container">
         <div className="detail-image">
-          <img src={product.image} alt={product.title} loading="lazy" onError={(e) => e.target.src='/vite.svg'} />
+<img src={product.image} alt={product.title} loading="lazy" onError={(e) => e.target.src='/vite.svg'} />
         </div>
         <div className="detail-info">
           <h1>{product.title}</h1>

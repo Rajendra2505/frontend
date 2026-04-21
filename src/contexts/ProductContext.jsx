@@ -62,8 +62,7 @@ function reducer(state, action) {
         ];
       }
 
-      
-      fetch('https://backend-zehy.onrender.comt/api/products', {
+      fetch('https://backend-zehy.onrender.com/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -132,7 +131,7 @@ export function ProductProvider({ children }) {
         title: p.name,
         price: Number(p.price),
         formattedPrice: Number(p.price).toLocaleString('en-IN'),
-        image: p.image.startsWith('http') ? p.image : `https://backend-zehy.onrender.com/api/products${p.image}`,
+        image: p.image,
         category: (p.category || '').toLowerCase(),
         rating: 4,
         discount: '',
@@ -166,7 +165,7 @@ export function ProductProvider({ children }) {
         title: p.name,
         price: Number(p.price),
         formattedPrice: Number(p.price).toLocaleString('en-IN'),
-        image: p.image.startsWith('http') ? p.image : `https://backend-zehy.onrender.com/api/products${p.image}`,
+        image: p.image,
         category: (p.category || '').toLowerCase(),
         rating: 4,
         discount: '',
@@ -230,4 +229,3 @@ export function useProducts() {
   }
   return context;
 }
-
