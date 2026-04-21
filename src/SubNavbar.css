@@ -1,0 +1,31 @@
+.subnav {
+  display: flex;
+  gap: 20px;
+  padding: 10px 20px;
+  background-color: #f7f7f7;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+}
+
+.subnav-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.subnav-item:hover {
+  background-color: #e0e0e0;
+}
+
+.subnav-item.active {
+  background-color: #007185;
+  color: white;
+  font-weight: 500;
+}
+
+.subnav span:not(.subnav-item) {
+  padding: 8px 12px;
+  color: #555;
+}
+

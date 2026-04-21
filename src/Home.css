@@ -1,0 +1,41 @@
+.home-content {
+  padding: 20px;
+  background-color: #e3e6e6;
+}
+
+.product-section {
+  background-color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.section-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f1111;
+}
+
+.see-more {
+  color: #007185;
+  font-size: 14px;
+}
+
+.see-more:hover {
+  color: #c7511f;
+}
+
+.product-grid {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
