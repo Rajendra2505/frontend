@@ -5,7 +5,7 @@ function ManageOrders() {
     const [loading, setLoading] = useState(false);
 
     const fetchOrders = () => {
-        fetch("https://backend-zehy.onrender.com")
+        fetch("https://backend-zehy.onrender.com/api/orders")
         .then(res => res.json())
         .then(data => setOrders(data))
         .catch(err => console.error('Fetch orders error:', err));
@@ -20,7 +20,7 @@ function ManageOrders() {
 
         setLoading(true);
         try {
-            await fetch(`https://backend-zehy.onrender.com${id}`, {
+            await fetch(`https://backend-zehy.onrender.com/api/orders${id}`, {
                 method: "PATCH",
                 headers: {"content-type": "application/json"},
                 body: JSON.stringify({status})
@@ -35,7 +35,7 @@ function ManageOrders() {
 
     const deleteOrder = async (id) => {
         if (!confirm('Delete this order?')) return;
-        await fetch(`https://backend-zehy.onrender.com${id}`, {
+        await fetch(`https://backend-zehy.onrender.com/api/orders${id}`, {
            method: "DELETE" 
         });
         fetchOrders();

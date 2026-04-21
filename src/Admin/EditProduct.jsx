@@ -19,7 +19,7 @@ function EditProduct(){
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`https://backend-zehy.onrender.com${id}`);
+                const response = await fetch(`https://backend-zehy.onrender.com/api/products${id}`);
                 if (!response.ok) throw new Error('Product not found');
                 const product = await response.json();
                 setFormData({
@@ -50,7 +50,7 @@ function EditProduct(){
                 ...formData,
                 category: formData.category.toLowerCase()
             };
-            const response = await fetch(`https://backend-zehy.onrender.com${id}`, {
+            const response = await fetch(`https://backend-zehy.onrender.com/api/products${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

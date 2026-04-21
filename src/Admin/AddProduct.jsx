@@ -64,7 +64,7 @@ function AddProduct(){
 
     setLoading(true);
     try {
-      const response = await fetch('https://backend-zehy.onrender.com', {
+      const response = await fetch('https://backend-zehy.onrender.com/api/products', {
         method: 'POST',
         body: formDataToSend,
         

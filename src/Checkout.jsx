@@ -72,7 +72,7 @@ export default function Checkout() {
     }));
 
     try {
-      const response = await fetch('https://backend-zehy.onrender.com', {
+      const response = await fetch('https://backend-zehy.onrender.com/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -101,7 +101,7 @@ export default function Checkout() {
   
   const handlePayment = async () => {
     try {
-      const res = await fetch("https://backend-zehy.onrender.com", {
+      const res = await fetch("https://backend-zehy.onrender.com/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -163,7 +163,7 @@ export default function Checkout() {
               return (
                 <div key={item.product?.id || item._id} className="cart-item">
                   <img 
-                    src={item.product?.image?.startsWith('http') ? item.product.image : `https://backend-zehy.onrender.com${item.product?.image || '/uploads/default.jpg'}`} 
+                    src={item.product?.image?.startsWith('http') ? item.product.image : `https://backend-zehy.onrender.com/api/orders${item.product?.image || '/uploads/default.jpg'}`} 
                     alt={item.product?.title || item.product?.name || 'Product'} 
                     className="cart-item-image" 
                   />

@@ -13,7 +13,7 @@ const handleDelete = async (productId) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this product?");
     if (confirmDelete) {
       try {
-        const response = await fetch(`https://backend-zehy.onrender.com${productId}`, {
+        const response = await fetch(`https://backend-zehy.onrender.com/api/products${productId}`, {
           method: 'DELETE'
         });
         if (response.ok) {

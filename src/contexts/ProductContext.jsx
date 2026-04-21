@@ -63,7 +63,7 @@ function reducer(state, action) {
       }
 
       
-      fetch('https://backend-zehy.onrender.comt', {
+      fetch('https://backend-zehy.onrender.comt/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -123,7 +123,7 @@ export function ProductProvider({ children }) {
 
   const refetchProducts = useCallback(async () => {
     try {
-      const res = await fetch('https://backend-zehy.onrender.com');
+      const res = await fetch('https://backend-zehy.onrender.com/api/products');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const backendProducts = await res.json();
@@ -132,7 +132,7 @@ export function ProductProvider({ children }) {
         title: p.name,
         price: Number(p.price),
         formattedPrice: Number(p.price).toLocaleString('en-IN'),
-        image: p.image.startsWith('http') ? p.image : `https://backend-zehy.onrender.com${p.image}`,
+        image: p.image.startsWith('http') ? p.image : `https://backend-zehy.onrender.com/api/products${p.image}`,
         category: (p.category || '').toLowerCase(),
         rating: 4,
         discount: '',
@@ -157,7 +157,7 @@ export function ProductProvider({ children }) {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const query = category === 'all' ? '' : `?category=${category}`;
-      const res = await fetch(`https://backend-zehy.onrender.com${query}`);
+      const res = await fetch(`https://backend-zehy.onrender.com/api/products${query}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       
       const backendProducts = await res.json();
@@ -166,7 +166,7 @@ export function ProductProvider({ children }) {
         title: p.name,
         price: Number(p.price),
         formattedPrice: Number(p.price).toLocaleString('en-IN'),
-        image: p.image.startsWith('http') ? p.image : `https://backend-zehy.onrender.com${p.image}`,
+        image: p.image.startsWith('http') ? p.image : `https://backend-zehy.onrender.com/api/products${p.image}`,
         category: (p.category || '').toLowerCase(),
         rating: 4,
         discount: '',
@@ -188,7 +188,7 @@ export function ProductProvider({ children }) {
 
   useEffect(() => {
     if (state.cartItems.length === 0) {
-      fetch('https://backend-zehy.onrender.com')
+      fetch('https://backend-zehy.onrender.com/api/products')
         .then(res => res.json())
         .then(cart => {
           if (cart.length > 0) {

@@ -13,7 +13,7 @@ export default function Login() {
     setError("");
     
     try {
-      const response = await fetch('https://backend-zehy.onrender.comn', {
+      const response = await fetch('https://backend-zehy.onrender.com/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
