@@ -36,12 +36,16 @@ export default function ProductCard({ product }) {
       <div className="product-image-container">
         {product.discount && <span className="discount-badge">{product.discount} off</span>}
         <img
-  src={`https://backend-zehy.onrender.com${product.image}`}
+  src={
+    product.image.startsWith("http")
+      ? product.image
+      : `https://backend-zehy.onrender.com${product.image}`
+  }
   alt={product.name}
   loading="lazy"
   onError={(e) => {
     console.log("Image failed:", e.target.src);
-    e.target.src = "/vite.svg"; // fallback only
+    e.target.src = "/vite.svg";
   }}
 />
       </div>
