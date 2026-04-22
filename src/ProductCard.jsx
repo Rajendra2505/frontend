@@ -29,8 +29,10 @@ export default function ProductCard({ product }) {
   const handleAddToCart = async (e) => {
     e.stopPropagation();
 
+  const productId = product._id || product.id;
+
     try {
-      console.log("Adding product:", product);
+      console.log("👉 Product clicked:", product);   // ✅ ADDED HERE
 
       const res = await fetch(
         "https://backend-zehy.onrender.com/api/cart",
@@ -40,8 +42,8 @@ export default function ProductCard({ product }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            productId: product._id,
-            product: product,   // ✅ important fix
+            productId: productId,
+            product: product,
             quantity: 1,
           }),
         }
@@ -54,15 +56,15 @@ export default function ProductCard({ product }) {
         return;
       }
 
-      console.log("Saved to DB:", data);
+      console.log("✅ Saved to DB:", data);
 
       dispatch({ type: "ADD_TO_CART", payload: product });
 
       alert(`${product.name} added to cart`);
 
-      navigate("/cart"); // ✅ redirect after add
+      navigate("/cart");
     } catch (err) {
-      console.error("Cart error:", err);
+      console.error("❌ Cart error:", err);
       alert("Error adding to cart");
     }
   };
