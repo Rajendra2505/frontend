@@ -9,7 +9,7 @@ export default function Cart() {
   React.useEffect(() => {
     const syncBackendCart = async () => {
       try {
-        const res = await fetch('https://backend-zehy.onrender.com');
+        const res = await fetch('https://backend-zehy.onrender.com/api/cart');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const backendCart = await res.json();
         
@@ -63,7 +63,7 @@ export default function Cart() {
           return (
             <div key={item.product?.id || item._id || Math.random()} className="cart-item">
               <img 
-                src={item.product?.image?.startsWith('http') ? item.product.image : `https://backend-zehy.onrender.com${item.product?.image || '/uploads/default.jpg'}`} 
+                src={item.product?.image?.startsWith('http') ? item.product.image : `https://backend-zehy.onrender.com/api/cart${item.product?.image || '/uploads/default.jpg'}`} 
                 alt={item.product?.title || item.product?.name || 'Product'} 
                 className="cart-item-image" 
               />
