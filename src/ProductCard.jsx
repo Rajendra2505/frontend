@@ -11,8 +11,11 @@ export default function ProductCard({ product }) {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
-        <span key={i} className={i <= (product.rating || 4) ? "star-filled" : "star-empty"}>
-          &#9733;
+        <span
+          key={i}
+          className={i <= (product.rating || 4) ? "star-filled" : "star-empty"}
+        >
+          
         </span>
       );
     }
@@ -20,50 +23,71 @@ export default function ProductCard({ product }) {
   };
 
   const handleProductClick = () => {
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${product._id}`);
   };
 
-  const handleAddToCart = (e) => {
-    if (!e) return;
+  const handleAddToCart = async (e) => {
     e.stopPropagation();
-    dispatch({ type: 'ADD_TO_CART', payload: product });
-    alert(`"${product.name}" added to cart!`);
-    navigate(`/product/${product.id}`);
+
+    try {
+      const res = await fetch(
+        "https://backend-zehy.onrender.com/api/cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId: product._id,
+            quantity: 1,
+          }),
+        }
+      );
+
+      const data = await res.json();
+      console.log("Saved to DB:", data);
+
+      dispatch({ type: "ADD_TO_CART", payload: product });
+
+      alert(`${product.name} added to cart!`);
+    } catch (err) {
+      console.error("Cart error:", err);
+    }
   };
 
   return (
     <div className="product-card" onClick={handleProductClick}>
       <div className="product-image-container">
-        {product.discount && <span className="discount-badge">{product.discount} off</span>}
+        {product.discount && (
+          <span className="discount-badge">
+            {product.discount}% OFF
+          </span>
+        )}
+
         <img
-  src={`https://backend-zehy.onrender.com${product.image}`}
-  alt={product.name}
-  loading="lazy"
-  onError={(e) => {
-    console.log("Image failed:", e.target.src);
-    e.target.src = "/vite.svg";
-  }}
-/>
+          src={`https://backend-zehy.onrender.com${product.image}`}
+          alt={product.name}
+          loading="lazy"
+          onError={(e) => {
+            console.log("Image failed:", e.target.src);
+            e.target.src = "/vite.svg";
+          }}
+        />
       </div>
-      
+
       <div className="product-info">
         <h3 className="product-title">{product.name}</h3>
-        
-        <div className="product-rating">
-          {renderStars()}
-        </div>
-        
+
+        <div className="product-rating">{renderStars()}</div>
+
         <div className="product-price">
           <span className="current-price">₹{product.price}</span>
           {product.original && (
             <span className="original-price">₹{product.original}</span>
           )}
         </div>
-        
-        <button 
-          className="add-to-cart-btn" 
-          onClick={handleAddToCart}
-        >
+
+        <button className="add-to-cart-btn" onClick={handleAddToCart}>
           Add to Cart
         </button>
       </div>
