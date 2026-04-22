@@ -30,6 +30,8 @@ export default function ProductCard({ product }) {
     e.stopPropagation();
 
     try {
+      console.log("Adding product:", product);
+
       const res = await fetch(
         "https://backend-zehy.onrender.com/api/cart",
         {
@@ -39,6 +41,7 @@ export default function ProductCard({ product }) {
           },
           body: JSON.stringify({
             productId: product._id,
+            product: product,   // ✅ important fix
             quantity: 1,
           }),
         }
@@ -57,7 +60,7 @@ export default function ProductCard({ product }) {
 
       alert(`${product.name} added to cart`);
 
-      navigate("/cart");   // ✅ redirect to cart page
+      navigate("/cart"); // ✅ redirect after add
     } catch (err) {
       console.error("Cart error:", err);
       alert("Error adding to cart");
