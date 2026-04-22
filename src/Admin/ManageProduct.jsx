@@ -49,20 +49,20 @@ const handleDelete = async (productId) => {
 
         <tbody>
           {allProducts.map((product) => (
-            <tr key={product.id}>
-              <td>{product.id}</td>
+            <tr key={product._id}>
+              <td>{product._id}</td>
               <td>{product.title}</td>
               <td>{product.price}</td>
               <td>{product.category}</td>
               <td>
                 <button 
-                  onClick={() => handleEdit(product.id)}
+                  onClick={() => handleEdit(product._id)}
                   style={{ marginRight: "10px" }}
                 >
                   Edit
                 </button>
                 <button 
-                  onClick={() => handleDelete(product.id)}
+                  onClick={() => handleDelete(product._id)}
                   style={{ color: "red" }}
                 >
                   Delete

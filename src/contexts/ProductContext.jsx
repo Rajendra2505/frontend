@@ -45,13 +45,13 @@ function reducer(state, action) {
 
     case 'ADD_TO_CART':
       const existingItem = state.cartItems.find(
-        item => item.product.id === action.payload.id
+        item => item.product._id === action.payload.id
       );
 
       let updatedCart;
       if (existingItem) {
         updatedCart = state.cartItems.map(item =>
-          item.product.id === action.payload.id
+          item.product._id === action.payload.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -82,7 +82,7 @@ function reducer(state, action) {
       return {
         ...state,
         cartItems: state.cartItems.filter(
-          item => item.product.id !== action.payload.id
+          item => item.product._id !== action.payload.id
         )
       };
 
@@ -90,7 +90,7 @@ function reducer(state, action) {
       return {
         ...state,
         cartItems: state.cartItems.map(item =>
-          item.product.id === action.payload.id
+          item.product._id === action.payload.id
             ? { ...item, quantity: action.payload.quantity }
             : item
         ).filter(item => item.quantity > 0)

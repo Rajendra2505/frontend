@@ -15,7 +15,7 @@ function ProductSection({ title, items }) {
       <div className="product-grid">
         {items.length > 0 ? (
           items.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product._id} product={product} />
           ))
         ) : (
           <p style={{ padding: "10px" }}>No products available</p>
