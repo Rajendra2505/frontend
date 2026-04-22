@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProductCard.css";
 import { useProducts } from "./contexts/ProductContext";
+import products from "razorpay/dist/types/products";
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export default function ProductCard({ product }) {
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
+    
 
     try {
       const res = await fetch(
@@ -38,7 +40,7 @@ export default function ProductCard({ product }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            productId: product._id,
+            productId: product.id,
             quantity: 1,
           }),
         }
