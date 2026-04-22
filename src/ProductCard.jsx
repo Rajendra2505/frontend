@@ -40,7 +40,7 @@ export default function ProductCard({ product }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            productId: product.id,
+            productId: product._id,
             quantity: 1,
           }),
         }
