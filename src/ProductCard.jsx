@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProductCard.css";
 import { useProducts } from "./contexts/ProductContext";
-import products from "razorpay/dist/types/products";
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -16,7 +15,7 @@ export default function ProductCard({ product }) {
           key={i}
           className={i <= (product.rating || 4) ? "star-filled" : "star-empty"}
         >
-          
+          ★
         </span>
       );
     }
@@ -29,8 +28,7 @@ export default function ProductCard({ product }) {
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
-    
-  
+
     try {
       const res = await fetch(
         "https://backend-zehy.onrender.com/api/cart",
@@ -47,13 +45,22 @@ export default function ProductCard({ product }) {
       );
 
       const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Failed to add to cart");
+        return;
+      }
+
       console.log("Saved to DB:", data);
 
       dispatch({ type: "ADD_TO_CART", payload: product });
 
-      alert(`${product.name} added to cart!`);
+      alert(`${product.name} added to cart`);
+
+      navigate("/cart");   // ✅ redirect to cart page
     } catch (err) {
       console.error("Cart error:", err);
+      alert("Error adding to cart");
     }
   };
 
