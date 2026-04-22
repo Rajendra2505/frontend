@@ -29,13 +29,8 @@ export default function ProductCard({ product }) {
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
-    dispatch({
-      type:'ADD_TO_CART',
-      payload:product
-    });
-    alert(`${product.name}added to cart`);
     
-
+  
     try {
       const res = await fetch(
         "https://backend-zehy.onrender.com/api/cart",
