@@ -8,32 +8,39 @@ export default function ProductCard({ product }) {
   const { dispatch } = useProducts();
 
   const renderStars = () => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span
-          key={i}
-          className={i <= (product.rating || 4) ? "star-filled" : "star-empty"}
-        >
-          ★
-        </span>
-      );
-    }
-    return stars;
+    return Array.from({ length: 5 }, (_, i) => (
+      <span
+        key={i}
+        className={i < (product.rating || 4) ? "star-filled" : "star-empty"}
+      >
+        ★
+      </span>
+    ));
   };
 
+  // ✅ FIXED NAVIGATION
   const handleProductClick = () => {
-    navigate(`/product/${product._id}`);
+    const productId = product?._id || product?.id;
+    if (!productId) return alert("Product ID missing");
+    navigate(`/product/${productId}`);
   };
 
+  // ✅ FINAL FIXED ADD TO CART
   const handleAddToCart = async (e) => {
     e.stopPropagation();
 
-  const productId = product._id || product.id;
+    const productId = product?._id || product?.id;
+
+    console.log("👉 Product:", product);
+    console.log("👉 Product ID:", productId);
+
+    // 🚨 VALIDATION (VERY IMPORTANT)
+    if (!productId) {
+      alert("Product ID is missing");
+      return;
+    }
 
     try {
-      console.log("👉 Product clicked:", product);   // ✅ ADDED HERE
-
       const res = await fetch(
         "https://backend-zehy.onrender.com/api/cart",
         {
@@ -52,20 +59,24 @@ export default function ProductCard({ product }) {
       const data = await res.json();
 
       if (!res.ok) {
+        console.error("❌ Backend Error:", data);
         alert(data.error || "Failed to add to cart");
         return;
       }
 
       console.log("✅ Saved to DB:", data);
 
-      dispatch({ type: "ADD_TO_CART", payload: product });
+      dispatch({
+        type: "ADD_TO_CART",
+        payload: product,
+      });
 
       alert(`${product.name} added to cart`);
 
-      navigate("/cart");
+      navigate("/cart"); // ✅ redirect
     } catch (err) {
-      console.error("❌ Cart error:", err);
-      alert("Error adding to cart");
+      console.error("❌ Cart Error:", err);
+      alert("Something went wrong");
     }
   };
 

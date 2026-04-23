@@ -37,13 +37,33 @@ export default function Cart() {
     return sum + price * (item.quantity || 0);
   }, 0) : 0;
 
-  const updateQuantity = (productId, quantity) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id: productId, quantity } });
-  };
+    const updateQuantity = async (productId, quantity) => {
+      dispatch({ type: 'UPDATE_QUANTITY', payload: { _id: productId, quantity } });
+      
+      // Sync to backend
+      try {
+        await fetch(`https://backend-zehy.onrender.com/api/cart/${productId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity }),
+        });
+      } catch (err) {
+        console.error('Update quantity sync failed:', err);
+      }
+    };
 
-  const removeItem = (productId) => {
-    dispatch({ type: 'REMOVE_FROM_CART', payload: { id: productId } });
-  };
+    const removeItem = async (productId) => {
+      dispatch({ type: 'REMOVE_FROM_CART', payload: { _id: productId } });
+      
+      // Sync to backend
+      try {
+        await fetch(`https://backend-zehy.onrender.com/api/cart/${productId}`, {
+          method: 'DELETE',
+        });
+      } catch (err) {
+        console.error('Remove item sync failed:', err);
+      }
+    };
 
   if (!cartItems || cartItems.length === 0) {
     return (
@@ -63,23 +83,27 @@ export default function Cart() {
           return (
             <div key={item.product?.id || item._id || Math.random()} className="cart-item">
               <img 
-                src={item.product?.image?.startsWith('http') ? item.product.image : `https://backend-zehy.onrender.com/api/cart${item.product?.image || '/uploads/default.jpg'}`} 
+  src={`https://backend-zehy.onrender.com${item.product?.image}`} 
+                onError={(e) => {
+                  console.log("Cart image failed:", e.target.src);
+                  e.target.src = '/vite.svg';
+                }} 
                 alt={item.product?.title || item.product?.name || 'Product'} 
                 className="cart-item-image" 
               />
               <div className="cart-item-details">
-                <h3>{item.product?.title || item.product?.name || 'Product'}</h3>
+  <h3>{item.product?.name || 'Product'}</h3>
                 <p>₹{typeof item.product?.price === 'string' ? item.product.price : item.product?.price?.toLocaleString('en-IN') || '0'} x {item.quantity || 1}</p>
                 <div className="quantity-controls">
-                  <button 
-                    onClick={() => updateQuantity(item.product?.id || item._id, (item.quantity || 1) - 1)}
-                    disabled={(item.quantity || 1) <= 1}
-                  >-</button>
+    <button 
+      onClick={() => updateQuantity(item.product?._id || item._id, (item.quantity || 1) - 1)}
+      disabled={(item.quantity || 1) <= 1}
+    >-</button>
                   <span>{item.quantity || 1}</span>
-                  <button 
-                    onClick={() => updateQuantity(item.product?.id || item._id, (item.quantity || 1) + 1)}
-                  >+</button>
-                  <button className="remove-btn" onClick={() => removeItem(item.product?.id || item._id)}>Remove</button>
+    <button 
+      onClick={() => updateQuantity(item.product?._id || item._id, (item.quantity || 1) + 1)}
+    >+</button>
+    <button className="remove-btn" onClick={() => removeItem(item.product?._id || item._id)}>Remove</button>
                 </div>
               </div>
               <div className="cart-item-total">₹{(price * (item.quantity || 1)).toLocaleString()}</div>

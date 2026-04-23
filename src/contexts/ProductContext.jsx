@@ -45,13 +45,13 @@ function reducer(state, action) {
 
     case 'ADD_TO_CART':
       const existingItem = state.cartItems.find(
-        item => item.product._id === action.payload.id
+        item => item.product._id === action.payload._id
       );
 
       let updatedCart;
       if (existingItem) {
         updatedCart = state.cartItems.map(item =>
-          item.product._id === action.payload.id
+          item.product._id === action.payload._id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -62,19 +62,7 @@ function reducer(state, action) {
         ];
       }
 
-      fetch('https://backend-zehy.onrender.com/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: 'guest',
-          productId: action.payload.id,
-          product: action.payload,
-          quantity: 1
-        })
-      })
-        .then(res => res.json())
-        .then(data => console.log(' Backend cart response:', data))
-        .catch(err => console.error(' Backend sync ERROR:', err));
+      // Backend sync handled in ProductCard
 
       return { ...state, cartItems: updatedCart };
 
@@ -82,7 +70,7 @@ function reducer(state, action) {
       return {
         ...state,
         cartItems: state.cartItems.filter(
-          item => item.product._id !== action.payload.id
+          item => item.product._id !== action.payload._id
         )
       };
 
@@ -90,7 +78,7 @@ function reducer(state, action) {
       return {
         ...state,
         cartItems: state.cartItems.map(item =>
-          item.product._id === action.payload.id
+          item.product._id === action.payload._id
             ? { ...item, quantity: action.payload.quantity }
             : item
         ).filter(item => item.quantity > 0)
