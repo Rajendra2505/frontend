@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useProducts } from './contexts/ProductContext';
-import './cart.css'; 
+import './cart.css';
 
 export default function Cart() {
   const { cartItems, dispatch } = useProducts();
@@ -10,60 +10,66 @@ export default function Cart() {
     const syncBackendCart = async () => {
       try {
         const res = await fetch('https://backend-zehy.onrender.com/api/cart');
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const backendCart = await res.json();
-        
-        dispatch({ type: 'LOAD_CART_BACKEND', payload: backendCart });
+        const data = await res.json();
+
+        // IMPORTANT FIX
+        dispatch({
+          type: 'LOAD_CART_BACKEND',
+          payload: data.products || [],
+        });
+
       } catch (err) {
         console.error('Backend cart sync failed:', err);
       }
     };
+
     syncBackendCart();
   }, [dispatch]);
 
-  
-  const getPrice = (priceStr) => {
-    if (typeof priceStr === 'number') return priceStr;
-    if (typeof priceStr === 'string') {
-      return parseInt(priceStr.replace(/,/g, '')) || 0;
-    }
+  const getPrice = (price) => {
+    if (typeof price === 'number') return price;
+    if (typeof price === 'string') return parseInt(price.replace(/,/g, '')) || 0;
     return 0;
   };
 
-  
-  const totalItems = cartItems ? cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0) : 0;
-  const totalPrice = cartItems ? cartItems.reduce((sum, item) => {
-    const price = getPrice(item.product?.price);
-    return sum + price * (item.quantity || 0);
-  }, 0) : 0;
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-    const updateQuantity = async (productId, quantity) => {
-      dispatch({ type: 'UPDATE_QUANTITY', payload: { _id: productId, quantity } });
-      
-      // Sync to backend
-      try {
-        await fetch(`https://backend-zehy.onrender.com/api/cart/${productId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantity }),
-        });
-      } catch (err) {
-        console.error('Update quantity sync failed:', err);
-      }
-    };
+  const totalPrice = cartItems.reduce((sum, item) => {
+    return sum + getPrice(item.product?.price) * item.quantity;
+  }, 0);
 
-    const removeItem = async (productId) => {
-      dispatch({ type: 'REMOVE_FROM_CART', payload: { _id: productId } });
-      
-      // Sync to backend
-      try {
-        await fetch(`https://backend-zehy.onrender.com/api/cart/${productId}`, {
-          method: 'DELETE',
-        });
-      } catch (err) {
-        console.error('Remove item sync failed:', err);
-      }
-    };
+  // ✅ FIXED: use productId
+  const updateQuantity = async (productId, quantity) => {
+    dispatch({
+      type: 'UPDATE_QUANTITY',
+      payload: { productId, quantity },
+    });
+
+    try {
+      await fetch(`https://backend-zehy.onrender.com/api/cart/${productId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity }),
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const removeItem = async (productId) => {
+    dispatch({
+      type: 'REMOVE_FROM_CART',
+      payload: { productId },
+    });
+
+    try {
+      await fetch(`https://backend-zehy.onrender.com/api/cart/${productId}`, {
+        method: 'DELETE',
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (!cartItems || cartItems.length === 0) {
     return (
@@ -77,47 +83,69 @@ export default function Cart() {
   return (
     <div className="cart-page">
       <h1>Shopping Cart ({totalItems} items)</h1>
+
       <div className="cart-items">
         {cartItems.map((item) => {
           const price = getPrice(item.product?.price);
+
           return (
-            <div key={item.product?.id || item._id || Math.random()} className="cart-item">
-              <img 
-  src={`https://backend-zehy.onrender.com${item.product?.image}`} 
-                onError={(e) => {
-                  console.log("Cart image failed:", e.target.src);
-                  e.target.src = '/vite.svg';
-                }} 
-                alt={item.product?.title || item.product?.name || 'Product'} 
-                className="cart-item-image" 
+            <div key={item.productId} className="cart-item">
+
+              <img
+                src={`https://backend-zehy.onrender.com${item.product?.image}`}
+                alt={item.product?.name}
+                className="cart-item-image"
+                onError={(e) => (e.target.src = '/vite.svg')}
               />
+
               <div className="cart-item-details">
-  <h3>{item.product?.name || 'Product'}</h3>
-                <p>₹{typeof item.product?.price === 'string' ? item.product.price : item.product?.price?.toLocaleString('en-IN') || '0'} x {item.quantity || 1}</p>
+                <h3>{item.product?.name}</h3>
+
+                <p>
+                  ₹{price.toLocaleString()} × {item.quantity}
+                </p>
+
                 <div className="quantity-controls">
-    <button 
-      onClick={() => updateQuantity(item.product?._id || item._id, (item.quantity || 1) - 1)}
-      disabled={(item.quantity || 1) <= 1}
-    >-</button>
-                  <span>{item.quantity || 1}</span>
-    <button 
-      onClick={() => updateQuantity(item.product?._id || item._id, (item.quantity || 1) + 1)}
-    >+</button>
-    <button className="remove-btn" onClick={() => removeItem(item.product?._id || item._id)}>Remove</button>
+                  <button
+                    onClick={() =>
+                      updateQuantity(item.productId, item.quantity - 1)
+                    }
+                    disabled={item.quantity <= 1}
+                  >
+                    -
+                  </button>
+
+                  <span>{item.quantity}</span>
+
+                  <button
+                    onClick={() =>
+                      updateQuantity(item.productId, item.quantity + 1)
+                    }
+                  >
+                    +
+                  </button>
+
+                  <button
+                    className="remove-btn"
+                    onClick={() => removeItem(item.productId)}
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
-              <div className="cart-item-total">₹{(price * (item.quantity || 1)).toLocaleString()}</div>
+
+              <div className="cart-item-total">
+                ₹{(price * item.quantity).toLocaleString()}
+              </div>
             </div>
           );
         })}
       </div>
+
       <div className="cart-total">
         <h2>Total: ₹{totalPrice.toLocaleString()}</h2>
-        <Link 
-          to="/checkout" 
-          className="checkout-btn" 
-          style={{pointerEvents: totalItems === 0 ? 'none' : 'auto', opacity: totalItems === 0 ? 0.5 : 1}}
-        >
+
+        <Link to="/checkout" className="checkout-btn">
           Proceed to Checkout
         </Link>
       </div>
