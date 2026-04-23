@@ -7,14 +7,6 @@ export default function Checkout() {
   const { cartItems, dispatch } = useProducts();
   const navigate = useNavigate();
 
-  const getPrice = (price) => {
-    if (typeof price === 'number') return price;
-    if (typeof price === 'string') {
-      return parseFloat(price.replace(/,/g, '')) || 0;
-    }
-    return 0;
-  };
-
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
@@ -27,14 +19,18 @@ export default function Checkout() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const totalItems = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  const getPrice = (price) => {
+    if (typeof price === 'number') return price;
+    if (typeof price === 'string') return parseFloat(price.replace(/,/g, '')) || 0;
+    return 0;
+  };
+
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const totalAmount = cartItems.reduce((sum, item) => {
-    const price = getPrice(item.product?.price);
-    return sum + price * (item.quantity || 0);
+    return sum + getPrice(item.product?.price) * item.quantity;
   }, 0);
 
   const handleInputChange = (e) => {
@@ -44,12 +40,14 @@ export default function Checkout() {
     });
   };
 
-  
+  // ✅ FIXED PLACE ORDER
   const handlePlaceOrder = async () => {
-    if (totalItems === 0) return;
+    if (totalItems === 0) {
+      alert("Cart is empty");
+      return;
+    }
 
     setLoading(true);
-    setError('');
 
     const shippingAddress = {
       fullName: formData.fullName,
@@ -61,44 +59,59 @@ export default function Checkout() {
     };
 
     const products = cartItems.map(item => ({
-      productId: item.productId || item._id,
+      productId: item.productId,
       product: {
-        name: item.product?.name || item.product?.title || 'Product',
-        price: typeof item.product?.price === 'number'
-          ? item.product.price
-          : parseFloat(item.product?.price) || 0
+        name: item.product?.name || item.product?.title,
+        price: Number(item.product?.price)
       },
-      quantity: item.quantity || 1
+      quantity: item.quantity
     }));
 
     try {
-      const response = await fetch('https://backend-zehy.onrender.com/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: 'guest',
-          products,
-          totalPrice: totalAmount,
-          shippingAddress,
-          paymentMethod: formData.paymentMethod,
-          email: formData.email
-        })
-      });
+      const response = await fetch(
+        "https://backend-zehy.onrender.com/api/orders",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userId: "guest",
+            products,
+            totalPrice: totalAmount,
+            shippingAddress,
+            paymentMethod: formData.paymentMethod,
+            email: formData.email
+          })
+        }
+      );
 
-      if (response.ok) {
-        dispatch({ type: 'CLEAR_CART' });
-        setSuccess(true);
-        setTimeout(() => navigate('/'), 3000);
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Order failed");
+        return;
       }
 
-    } catch (err) {
-      setError('Order failed');
+      alert("Order placed successfully ✅");
+
+      dispatch({ type: "CLEAR_CART" });
+
+      setSuccess(true);
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
     } finally {
       setLoading(false);
     }
   };
 
-  
+  // 💳 ONLINE PAYMENT
   const handlePayment = async () => {
     try {
       const res = await fetch("https://backend-zehy.onrender.com/api/orders", {
@@ -112,7 +125,7 @@ export default function Checkout() {
       const data = await res.json();
 
       const options = {
-        key: "rzp_test_SdTGZVgh5DZswt", 
+        key: "rzp_test_SdTGZVgh5DZswt",
         amount: data.amount,
         currency: "INR",
         name: "Amazon Clone",
@@ -120,9 +133,7 @@ export default function Checkout() {
         order_id: data.id,
 
         handler: async function () {
-          alert("Payment Successful ");
-
-          
+          alert("Payment Successful");
           await handlePlaceOrder();
         },
 
@@ -144,45 +155,48 @@ export default function Checkout() {
     return (
       <div style={{ padding: '40px', textAlign: 'center' }}>
         <h2 style={{ color: 'green' }}>Order Placed Successfully!</h2>
-        <p>Email sent. Redirecting...</p>
+        <p>Redirecting...</p>
       </div>
     );
   }
 
   return (
     <div className="checkout-container">
-      <h1 className="checkout-title">Checkout ({totalItems} items)</h1>
+      <h1>Checkout ({totalItems} items)</h1>
 
-      {cartItems.length > 0 && (
-        <div className="order-summary">
-          <h2>Order Summary</h2>
-          <div className="cart-items">
-            {cartItems.map((item) => {
-              const price = getPrice(item.product?.price);
-              const itemTotal = price * (item.quantity || 1);
-              return (
-                <div key={item.product?.id || item._id} className="cart-item">
-                  <img 
-                    src={item.product?.image?.startsWith('http') ? item.product.image : `https://backend-zehy.onrender.com/api/orders${item.product?.image || '/uploads/default.jpg'}`} 
-                    alt={item.product?.title || item.product?.name || 'Product'} 
-                    className="cart-item-image" 
-                  />
-                  <div className="cart-item-details">
-                    <h3>{item.product?.title || item.product?.name || 'Product'}</h3>
-                    <p>₹{price.toLocaleString('en-IN')} x {item.quantity || 1}</p>
-                  </div>
-                  <div className="cart-item-total">₹{itemTotal.toLocaleString('en-IN')}</div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="order-total">
-            Order Total: ₹{totalAmount.toLocaleString('en-IN')}
-          </div>
-        </div>
-      )}
+      <div className="cart-items">
+        {cartItems.map(item => {
+          const price = getPrice(item.product?.price);
+          return (
+            <div key={item.productId} className="cart-item">
 
-      <form className="checkout-form" onSubmit={(e) => { e.preventDefault(); }}>
+              <img
+                src={
+                  item.product?.image?.startsWith('http')
+                    ? item.product.image
+                    : `https://backend-zehy.onrender.com${item.product?.image}`
+                }
+                alt={item.product?.name}
+              />
+
+              <div>
+                <h3>{item.product?.name}</h3>
+                <p>₹{price} x {item.quantity}</p>
+              </div>
+
+              <div>
+                ₹{price * item.quantity}
+              </div>
+
+            </div>
+          );
+        })}
+      </div>
+
+      <h2>Total: ₹{totalAmount}</h2>
+
+      <form onSubmit={(e) => e.preventDefault()}>
+
         <input name="fullName" placeholder="Name" onChange={handleInputChange} required />
         <input name="phone" placeholder="Phone" onChange={handleInputChange} required />
         <input name="streetAddress" placeholder="Address" onChange={handleInputChange} required />
@@ -196,16 +210,16 @@ export default function Checkout() {
           <option value="card">Online Payment</option>
         </select>
 
-        
         {formData.paymentMethod === "COD" ? (
-          <button type="button" onClick={handlePlaceOrder}>
-            Place Order (COD)
+          <button type="button" onClick={handlePlaceOrder} disabled={loading}>
+            {loading ? "Placing..." : "Place Order"}
           </button>
         ) : (
           <button type="button" onClick={handlePayment}>
             Pay Now ₹{totalAmount}
           </button>
         )}
+
       </form>
     </div>
   );
