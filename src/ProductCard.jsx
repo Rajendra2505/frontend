@@ -7,6 +7,9 @@ export default function ProductCard({ product }) {
   const navigate = useNavigate();
   const { dispatch } = useProducts();
 
+  const productId = product?._id || product?.id;
+  const productName = product?.name || product?.title || "Product";
+
   const renderStars = () => {
     return Array.from({ length: 5 }, (_, i) => (
       <span
@@ -18,23 +21,19 @@ export default function ProductCard({ product }) {
     ));
   };
 
-  // ✅ FIXED NAVIGATION
+  // ✅ PRODUCT CLICK
   const handleProductClick = () => {
-    const productId = product?._id || product?.id;
-    if (!productId) return alert("Product ID missing");
+    if (!productId) {
+      alert("Product ID missing");
+      return;
+    }
     navigate(`/product/${productId}`);
   };
 
-  // ✅ FINAL FIXED ADD TO CART
+  // ✅ ADD TO CART
   const handleAddToCart = async (e) => {
     e.stopPropagation();
 
-    const productId = product?._id || product?.id;
-
-    console.log("👉 Product:", product);
-    console.log("👉 Product ID:", productId);
-
-    // 🚨 VALIDATION (VERY IMPORTANT)
     if (!productId) {
       alert("Product ID is missing");
       return;
@@ -71,9 +70,9 @@ export default function ProductCard({ product }) {
         payload: product,
       });
 
-      alert(`${product.name} added to cart`);
+      alert(`${productName} added to cart`);
 
-      navigate("/cart"); // ✅ redirect
+      navigate("/cart");
     } catch (err) {
       console.error("❌ Cart Error:", err);
       alert("Something went wrong");
@@ -90,8 +89,12 @@ export default function ProductCard({ product }) {
         )}
 
         <img
-          src={`https://backend-zehy.onrender.com${product.image}`}
-          alt={product.name}
+          src={
+            product?.image
+              ? `https://backend-zehy.onrender.com${product.image}`
+              : "/vite.svg"
+          }
+          alt={productName}
           loading="lazy"
           onError={(e) => {
             console.log("Image failed:", e.target.src);
@@ -101,7 +104,7 @@ export default function ProductCard({ product }) {
       </div>
 
       <div className="product-info">
-        <h3 className="product-title">{product.name}</h3>
+        <h3 className="product-title">{productName}</h3>
 
         <div className="product-rating">{renderStars()}</div>
 
