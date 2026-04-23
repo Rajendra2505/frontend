@@ -175,7 +175,7 @@ export function ProductProvider({ children }) {
 
   useEffect(() => {
     if (state.cartItems.length === 0) {
-      fetch('https://backend-zehy.onrender.com/api/products')
+      fetch('https://backend-zehy.onrender.com/api/cart')
         .then(res => res.json())
         .then(cart => {
           if (cart.length > 0) {
