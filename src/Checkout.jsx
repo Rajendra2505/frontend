@@ -114,6 +114,9 @@ export default function Checkout() {
   // 💳 ONLINE PAYMENT
   const handlePayment = async () => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(()=>controller.abort(),120000);
+      
       const res = await fetch("https://backend-zehy.onrender.com/api/orders", {
         method: "POST",
         headers: {
