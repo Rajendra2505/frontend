@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProducts } from "../contexts/ProductContext";
 
-function EditProduct(){
+function EditProduct() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { refetchProducts } = useProducts();
-    
+
     const [formData, setFormData] = useState({
         name: '',
         price: '',
@@ -15,7 +15,7 @@ function EditProduct(){
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // Load current product data
+
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -71,35 +71,35 @@ function EditProduct(){
     if (loading) return <div>Loading product...</div>;
     if (error) return <div>Error: {error}</div>;
 
-    return(
-        <div style={{padding:"40px"}}>
+    return (
+        <div style={{ padding: "40px" }}>
             <h2>Edit Product ID: {id}</h2>
             <form onSubmit={handleUpdate}>
                 <div>
-                    <label>Product Name:</label><br/>
-                    <input 
-                        type="text" 
+                    <label>Product Name:</label><br />
+                    <input
+                        type="text"
                         name="name"
                         placeholder="Product name"
                         value={formData.name}
                         onChange={handleChange}
                         required
-                    /><br/><br/>
+                    /><br /><br />
                 </div>
                 <div>
-                    <label>Price:</label><br/>
-                    <input 
-                        type="number" 
+                    <label>Price:</label><br />
+                    <input
+                        type="number"
                         name="price"
                         placeholder="Price"
                         value={formData.price}
                         onChange={handleChange}
                         required
-                    /><br/><br/>
+                    /><br /><br />
                 </div>
                 <div>
-                    <label>Category:</label><br/>
-                    <select 
+                    <label>Category:</label><br />
+                    <select
                         name="category"
                         value={formData.category}
                         onChange={handleChange}
@@ -110,7 +110,7 @@ function EditProduct(){
                         <option value="fashion">Fashion</option>
                         <option value="home">Home</option>
                         <option value="beauty">Beauty</option>
-                    </select><br/><br/>
+                    </select><br /><br />
                 </div>
                 <button type="submit">Update Product</button>
             </form>

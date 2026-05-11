@@ -14,6 +14,7 @@ import Footer from "./Footer";
 import AdminLogin from "./Admin/AdminLogin";
 import { ProductProvider } from "./contexts/ProductContext"; 
 import ManageOrders from "./Admin/ManageOrders";
+import Dashboard from "./Admin/Dashboard";
 
 function App() {
   const location = useLocation();
@@ -35,6 +36,7 @@ function App() {
           <Route path="/manage-product" element={<ManageProduct />} />
           <Route path="/edit-product/:id" element={<EditProduct />} />
           <Route path="/manage-orders" element={<ManageOrders/>}/>
+          <Route path="/admin" element={<Dashboard/>}/>
         </Routes>
         {location.pathname !== "/admin-login" &&
          location.pathname !== "/admin-dashboard" && <Footer />}
