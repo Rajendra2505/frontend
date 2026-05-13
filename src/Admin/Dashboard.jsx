@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import "./dashboard.css";
+import Analytics from "../Analytics";
 
 export default function Dashboard() {
   const [products, setProducts] = useState([]);
@@ -37,6 +38,7 @@ export default function Dashboard() {
   );
 
   return (
+    
     <div className="dashboard-container">
       <Sidebar />
 
@@ -61,6 +63,7 @@ export default function Dashboard() {
           </div>
 
         </div>
+        <Analytics/>
 
         <div className="recent-orders">
           <h2>Recent Orders</h2>
