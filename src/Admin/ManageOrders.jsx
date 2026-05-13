@@ -16,22 +16,36 @@ function ManageOrders() {
     }, []);
 
     const updateStatus = async (id, status) => {
-        if (!confirm(`Update status to "${status}"?`)) return;
 
-        setLoading(true);
-        try {
-            await fetch(`https://backend-zehy.onrender.com/api/orders${id}`, {
-                method: "PATCH",
-                headers: {"content-type": "application/json"},
-                body: JSON.stringify({status})
-            });
-            fetchOrders();
-        } catch (err) {
-            console.error('Update status error:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+  try {
+
+    const res = await fetch(
+
+      `https://backend-zehy.onrender.com/api/orders/${id}`,
+
+      {
+        method: "PATCH",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({ status })
+      }
+    );
+
+    if (res.ok) {
+
+      alert("Status Updated");
+
+      fetchOrders();
+    }
+
+  } catch (error) {
+
+    console.log(error);
+  }
+};
 
     const deleteOrder = async (id) => {
         if (!confirm('Delete this order?')) return;
